@@ -13,7 +13,7 @@ def get_db_connection():
 def view_all_records():
     conn = get_db_connection()
     # Pobieranie wszystkich rekordów
-    records = conn.execute("SELECT * FROM zakupy").fetchall()
+    records = conn.execute("SELECT * FROM zakupy ORDER BY numer_grupy").fetchall()
     conn.close()
 
     df = pd.DataFrame(records, columns=records[0].keys()) if records else pd.DataFrame()
