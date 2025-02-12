@@ -36,7 +36,7 @@ def view_all_records():
 def view_buy_records():
     conn = get_db_connection()
     # Pobieranie tylko rekordów, gdzie "kupic" = "tak"
-    records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak'").fetchall()
+    records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak' ORDER BY numer_grupy").fetchall()
     conn.close()
 
     df = pd.DataFrame(records, columns=records[0].keys()) if records else pd.DataFrame()
