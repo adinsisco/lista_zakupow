@@ -74,7 +74,7 @@ def add_record():
     components.html(
         """
         <script>
-        alert('Dodaj rekord lokalnie');
+        //alert('Dodaj rekord lokalnie');
         //let host = location.host;
         //if (host === "listazakupow.streamlit.app") {
         //    alert('Dodaj rekord lokalnie'); 
