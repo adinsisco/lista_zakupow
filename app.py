@@ -13,7 +13,7 @@ def get_db_connection():
 def view_all_records():
     conn = get_db_connection()
     # Pobieranie wszystkich rekordów
-    records = conn.execute("SELECT * FROM zakupy ORDER BY numer_grupy").fetchall()
+    records = conn.execute("SELECT * FROM zakupy").fetchall()
     conn.close()
 
     df = pd.DataFrame(records, columns=records[0].keys()) if records else pd.DataFrame()
@@ -32,28 +32,27 @@ def view_all_records():
             sleep(1)
             st.rerun()
 
-# Funkcja do wyświetlania rekordów, które należy kupić
-def view_buy_records():
+# Funkcja do wyświetlania rekordów, które należy kupić, z dodatkowymi informacjami na przycisku
+def view_buy_records_with_buttons():
     conn = get_db_connection()
     # Pobieranie tylko rekordów, gdzie "kupic" = "tak"
     records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak' ORDER BY numer_grupy").fetchall()
     conn.close()
 
-    df = pd.DataFrame(records, columns=records[0].keys()) if records else pd.DataFrame()
     st.title("Rekordy do Kupienia")
-    st.dataframe(df)
 
-    if not df.empty:
-        # Przycisk do zmiany statusu "kupic" na "nie"
-        record_id = st.selectbox("Wybierz ID rekordu do oznaczenia jako kupiony", df['id'])
-        if st.button("Oznacz jako kupiony"):
+    for record in records:
+        # Ustawienie etykiety przycisku z dodatkowymi informacjami
+        button_label = f"{record['nazwa_towaru']} - {record['ilosc_towaru']} {record['jednostka']}"
+        if st.button(button_label):
             conn = get_db_connection()
-            conn.execute("UPDATE zakupy SET kupic = 'nie' WHERE id = ?", (record_id,))
+            conn.execute("UPDATE zakupy SET kupic = 'nie' WHERE id = ?", (record["id"],))
             conn.commit()
             conn.close()
-            st.success(f"Rekord o ID {record_id} został oznaczony jako kupiony")
+            st.success(f"{record['nazwa_towaru']} został oznaczony jako kupiony")
             sleep(1)
             st.rerun()
+
 
 # Funkcja do dodawania nowego rekordu
 def add_record():
@@ -118,10 +117,10 @@ def edit_record():
 # Główna funkcja aplikacji
 def main():
     st.sidebar.title("Menu")
-    choice = st.sidebar.selectbox("Wybierz opcję", ["Przeglądaj do kupienia", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
+    choice = st.sidebar.selectbox("Wybierz opcję", ["Do Kupienia", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
 
-    if choice == "Przeglądaj do kupienia":
-        view_buy_records()
+    if choice == "Do Kupienia":
+        view_buy_records_with_buttons()
     elif choice == "Przeglądaj wszystkie":
         view_all_records()
     elif choice == "Dodaj":
