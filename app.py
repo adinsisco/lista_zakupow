@@ -65,12 +65,13 @@ def add_record():
     components.html(
         """
         <script>
-        let host = location.host;
-        if (host === "listazakupow.streamlit.app") {
-            alert('Dodaj rekord lokalnie'); 
-        } else {
-        alert('ok');
-        }
+        alert('Dodaj rekord lokalnie');
+        //let host = location.host;
+        //if (host === "listazakupow.streamlit.app") {
+        //    alert('Dodaj rekord lokalnie'); 
+        //} else {
+        //alert('ok');
+        //}
         </script>
         """,
         height=0,  # Wysokość osadzonego komponentu HTML
