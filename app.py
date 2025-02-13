@@ -69,9 +69,9 @@ def add_record():
         """
         <script>
         // Wyświetla alert z bieżącym adresem URL
-        // alert(location.href);
+        alert(location.host);
         //url = location.href;
-        alert('Dodaj rekord lokalnie');
+        //alert('Dodaj rekord lokalnie');
         //alert(url);
         </script>
         """,
