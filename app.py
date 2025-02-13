@@ -61,18 +61,16 @@ def add_record():
     st.subheader("Dodaj Rekord")
     # start
     # dodać wyłączenie opcji po adresem https://listazakupow.streamlit.app/
-    # <script>
-    # url = location.href
-    # </script>
     # Wstawienie HTML i JavaScript do aplikacji Streamlit
     components.html(
         """
         <script>
-        // Wyświetla alert z bieżącym adresem URL
-        alert(location.host);
-        //url = location.href;
-        //alert('Dodaj rekord lokalnie');
-        //alert(url);
+        let host = location.host;
+        if (host === "listazakupow.streamlit.app") {
+            alert('Dodaj rekord lokalnie'); 
+        } else {
+        alert('ok');
+        }
         </script>
         """,
         height=0,  # Wysokość osadzonego komponentu HTML
