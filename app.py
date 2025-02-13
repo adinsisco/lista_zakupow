@@ -2,6 +2,8 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 from time import sleep
+# from streamlit_javascript import st_javascript
+import streamlit.components.v1 as components
 
 # Funkcja pomocnicza do połączenia z bazą danych
 def get_db_connection():
@@ -57,6 +59,26 @@ def view_buy_records_with_buttons():
 # Funkcja do dodawania nowego rekordu
 def add_record():
     st.subheader("Dodaj Rekord")
+    # start
+    # dodać wyłączenie opcji po adresem https://listazakupow.streamlit.app/
+    # <script>
+    # url = location.href
+    # </script>
+    # Wstawienie HTML i JavaScript do aplikacji Streamlit
+    components.html(
+        """
+        <script>
+        // Wyświetla alert z bieżącym adresem URL
+        // alert(location.href);
+        // url = location.href;
+        alert('test');
+        //alert(url);
+        </script>
+        """,
+        height=0,  # Wysokość osadzonego komponentu HTML
+    )
+    # stop
+
     numer_grupy = st.number_input("Numer Grupy", min_value=0)
     nazwa_grupy = st.text_input("Nazwa Grupy")
     nazwa_towaru = st.text_input("Nazwa Towaru")
