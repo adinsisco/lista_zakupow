@@ -76,7 +76,6 @@ def add_record():
         """,
         height=0,  # Wysokość osadzonego komponentu HTML
     )
-    # stop
 
     numer_grupy = st.number_input("Numer Grupy", min_value=0)
     nazwa_grupy = st.text_input("Nazwa Grupy")
