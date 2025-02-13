@@ -70,9 +70,9 @@ def add_record():
         <script>
         // Wyświetla alert z bieżącym adresem URL
         // alert(location.href);
-        url = location.href;
-        //alert('test');
-        alert(url);
+        //url = location.href;
+        alert('Dodaj rekord lokalnie');
+        //alert(url);
         </script>
         """,
         height=0,  # Wysokość osadzonego komponentu HTML
