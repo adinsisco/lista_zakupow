@@ -4,6 +4,13 @@ import pandas as pd
 from time import sleep
 # from streamlit_javascript import st_javascript
 import streamlit.components.v1 as components
+import os
+
+# start
+def is_local():
+    host = os.getenv('HOSTNAME', 'localhost')
+    return host in ['localhost', '127.0.0.1', '::1']
+# stop
 
 # Funkcja pomocnicza do połączenia z bazą danych
 def get_db_connection():
@@ -76,6 +83,13 @@ def add_record():
         """,
         height=0,  # Wysokość osadzonego komponentu HTML
     )
+
+    if is_local():
+        st.write("Aplikacja działa lokalnie.")
+    else:
+        st.write("Aplikacja działa w hostingu.")
+
+    # stop
 
     numer_grupy = st.number_input("Numer Grupy", min_value=0)
     nazwa_grupy = st.text_input("Nazwa Grupy")
