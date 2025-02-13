@@ -26,7 +26,8 @@ def view_all_records():
     conn.close()
 
     df = pd.DataFrame(records, columns=records[0].keys()) if records else pd.DataFrame()
-    st.title("Wszystkie Rekordy")
+    # st.title("Wszystkie Rekordy")
+    st.write("Wszystkie Rekordy")
     st.dataframe(df)
 
     if not df.empty:
@@ -48,7 +49,8 @@ def view_buy_records_with_buttons():
     records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak' ORDER BY numer_grupy").fetchall()
     conn.close()
 
-    st.title("Rekordy do Kupienia")
+    # st.title("Rekordy do Kupienia")
+    st.write("Do Kupienia")
 
     for record in records:
         # Ustawienie etykiety przycisku z dodatkowymi informacjami
