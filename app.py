@@ -61,7 +61,7 @@ def view_buy_records_with_buttons():
             conn.commit()
             conn.close()
             st.success(f"{record['nazwa_towaru']} został oznaczony jako kupiony")
-            sleep(1)
+            # sleep(1)
             st.rerun()
 
 
