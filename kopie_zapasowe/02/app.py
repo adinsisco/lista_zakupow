@@ -42,7 +42,7 @@ def view_all_records():
             sleep(1)
             st.rerun()
 
-# Funkcja do wyświetlania rekordów, które należy kupić, z możliwością edycji ilości towaru
+# Funkcja do wyświetlania rekordów, które należy kupić, z dodatkowymi informacjami na przycisku
 def view_buy_records_with_buttons():
     conn = get_db_connection()
     # Pobieranie tylko rekordów, gdzie "kupic" = "tak"
@@ -52,40 +52,17 @@ def view_buy_records_with_buttons():
     # st.title("Rekordy do Kupienia")
     st.write("Do Kupienia")
 
-    if records:
-        df = pd.DataFrame(records, columns=records[0].keys())
-        # Dodanie pola do edycji dla `ilosc_towaru`
-        for index, row in df.iterrows():
-            col1, col2, col3, _ = st.columns([3, 2, 1, 1])
-            with col1:
-                st.text(f"{row['nazwa_towaru']} ({row['jednostka']})")
-            with col2:
-                # Pole do edycji ilości
-                new_quantity = st.number_input(
-                    f"Ilość dla {row['nazwa_towaru']}",
-                    min_value=0,
-                    value=row['ilosc_towaru'],
-                    key=f"qty_{row['id']}"
-                )
-            with col3:
-                if st.button(f"Zaktualizuj ilość", key=f"update_{row['id']}"):
-                    conn = get_db_connection()
-                    conn.execute("UPDATE zakupy SET ilosc_towaru = ? WHERE id = ?",
-                                 (new_quantity, row['id']))
-                    conn.commit()
-                    conn.close()
-                    st.success(f"Ilość dla {row['nazwa_towaru']} została zaktualizowana")
-                    st.rerun()
-
-        # Przycisk w drugiej kolumnie do zaznaczenia jako kupiony
-        for index, row in df.iterrows():
-            if st.button(f"Oznacz jako kupiony: {row['nazwa_towaru']}", key=f"bought_{row['id']}"):
-                conn = get_db_connection()
-                conn.execute("UPDATE zakupy SET kupic = 'nie' WHERE id = ?", (row['id'],))
-                conn.commit()
-                conn.close()
-                st.success(f"{row['nazwa_towaru']} został oznaczony jako kupiony")
-                st.rerun()
+    for record in records:
+        # Ustawienie etykiety przycisku z dodatkowymi informacjami
+        button_label = f"{record['nazwa_towaru']} - {record['ilosc_towaru']} {record['jednostka']}"
+        if st.button(button_label):
+            conn = get_db_connection()
+            conn.execute("UPDATE zakupy SET kupic = 'nie' WHERE id = ?", (record["id"],))
+            conn.commit()
+            conn.close()
+            st.success(f"{record['nazwa_towaru']} został oznaczony jako kupiony")
+            # sleep(1)
+            st.rerun()
 
 
 # Funkcja do dodawania nowego rekordu
