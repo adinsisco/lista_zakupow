@@ -2,36 +2,28 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 from time import sleep
-# from streamlit_javascript import st_javascript
 import streamlit.components.v1 as components
 import os
 
-# start
 def is_local():
     host = os.getenv('HOSTNAME', 'localhost')
     return host in ['localhost', '127.0.0.1', '::1']
-# stop
 
-# Funkcja pomocnicza do połączenia z bazą danych
 def get_db_connection():
     conn = sqlite3.connect("lista_zakupow.db")
     conn.row_factory = sqlite3.Row
     return conn
 
-# Funkcja do wyświetlania wszystkich rekordów
 def view_all_records():
     conn = get_db_connection()
-    # Pobieranie wszystkich rekordów
     records = conn.execute("SELECT * FROM zakupy ORDER BY nazwa_towaru").fetchall()
     conn.close()
 
     df = pd.DataFrame(records, columns=records[0].keys()) if records else pd.DataFrame()
-    # st.title("Wszystkie Rekordy")
     st.write("Wszystkie Rekordy")
     st.dataframe(df)
 
     if not df.empty:
-        # Przycisk do zmiany statusu "kupic" na "tak"
         record_id = st.selectbox("Wybierz ID rekordu, aby oznaczyć jako do kupienia", df['id'])
         if st.button("Oznacz jako do kupienia"):
             conn = get_db_connection()
@@ -42,17 +34,14 @@ def view_all_records():
             sleep(1)
             st.rerun()
 
-# Funkcja do wyświetlania rekordów, które należy kupić, z dodatkowymi informacjami na przycisku
 def view_buy_records_with_buttons2():
     conn = get_db_connection()
-    # Pobieranie tylko rekordów, gdzie "kupic" = "tak"
     records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak' ORDER BY numer_grupy").fetchall()
     conn.close()
 
     st.write("Do Kupienia")
 
     for record in records:
-        # Ustawienie etykiety przycisku z dodatkowymi informacjami
         button_label = f"{record['nazwa_towaru']} - {record['ilosc_towaru']} {record['jednostka']}"
         if st.button(button_label):
             conn = get_db_connection()
@@ -63,25 +52,38 @@ def view_buy_records_with_buttons2():
             sleep(1)
             st.rerun()
 
-# Funkcja do wyświetlania rekordów, które należy kupić, z możliwością edycji ilości towaru
+def view_not_bought_records():
+    conn = get_db_connection()
+    records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'nie' ORDER BY nazwa_towaru").fetchall()
+    conn.close()
+
+    st.write("Do Zakupu")
+
+    for record in records:
+        button_label = f"{record['nazwa_towaru']} - {record['ilosc_towaru']} {record['jednostka']}"
+        if st.button(button_label):
+            conn = get_db_connection()
+            conn.execute("UPDATE zakupy SET kupic = 'tak' WHERE id = ?", (record["id"],))
+            conn.commit()
+            conn.close()
+            st.success(f"{record['nazwa_towaru']} został oznaczony jako do kupienia")
+            sleep(1)
+            st.rerun()
+
 def view_buy_records_with_buttons():
     conn = get_db_connection()
-    # Pobieranie tylko rekordów, gdzie "kupic" = "tak"
     records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak' ORDER BY numer_grupy").fetchall()
     conn.close()
 
-    # st.title("Rekordy do Kupienia")
     st.write("Zmień ilość")
 
     if records:
         df = pd.DataFrame(records, columns=records[0].keys())
-        # Dodanie pola do edycji dla `ilosc_towaru`
         for index, row in df.iterrows():
             col1, col2, col3, _ = st.columns([3, 2, 1, 1])
             with col1:
                 st.text(f"{row['nazwa_towaru']} ({row['jednostka']})")
             with col2:
-                # Pole do edycji ilości
                 new_quantity = st.number_input(
                     f"Ilość dla {row['nazwa_towaru']}",
                     min_value=0,
@@ -98,7 +100,6 @@ def view_buy_records_with_buttons():
                     st.success(f"Ilość dla {row['nazwa_towaru']} została zaktualizowana")
                     st.rerun()
 
-        # Przycisk w drugiej kolumnie do zaznaczenia jako kupiony
         for index, row in df.iterrows():
             if st.button(f"Oznacz jako kupiony: {row['nazwa_towaru']}", key=f"bought_{row['id']}"):
                 conn = get_db_connection()
@@ -108,26 +109,14 @@ def view_buy_records_with_buttons():
                 st.success(f"{row['nazwa_towaru']} został oznaczony jako kupiony")
                 st.rerun()
 
-
-# Funkcja do dodawania nowego rekordu
 def add_record():
     st.subheader("Dodaj Rekord")
-    # start
-    # dodać wyłączenie opcji po adresem https://listazakupow.streamlit.app/
-    # Wstawienie HTML i JavaScript do aplikacji Streamlit
     components.html(
         """
         <script>
-        //alert('Dodaj rekord lokalnie');
-        //let host = location.host;
-        //if (host === "listazakupow.streamlit.app") {
-        //    alert('Dodaj rekord lokalnie'); 
-        //} else {
-        //alert('ok');
-        //}
         </script>
         """,
-        height=0,  # Wysokość osadzonego komponentu HTML
+        height=0,
     )
 
     if is_local():
@@ -135,7 +124,6 @@ def add_record():
     else:
         st.write("Aplikacja działa w hostingu.")
 
-    # stop
     if is_local():
         numer_grupy = st.number_input("Numer Grupy", min_value=0)
         nazwa_grupy = st.text_input("Nazwa Grupy")
@@ -154,10 +142,6 @@ def add_record():
             conn.close()
             st.success("Rekord został dodany")
 
-
-
-
-# Funkcja do usuwania rekordu
 def delete_record():
     st.subheader("Usuń Rekord")
     record_id = st.number_input("ID Rekordu", min_value=0)
@@ -168,7 +152,6 @@ def delete_record():
         conn.close()
         st.success(f"Rekord z ID {record_id} został usunięty")
 
-# Funkcja do edytowania rekordu
 def edit_record():
     st.subheader("Edytuj Rekord")
     record_id = st.number_input("ID Rekordu do Edycji", min_value=0)
@@ -197,13 +180,14 @@ def edit_record():
     else:
         st.warning("Rekord nie istnieje")
 
-# Główna funkcja aplikacji
 def main():
     st.sidebar.title("Menu")
-    choice = st.sidebar.selectbox("Wybierz opcję", ["Do kupienia", "Zmień ilość", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
+    choice = st.sidebar.selectbox("Wybierz opcję", ["Do kupienia", "Do Zakupu", "Zmień ilość", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
 
     if choice == "Do kupienia":
         view_buy_records_with_buttons2()
+    elif choice == "Do Zakupu":
+        view_not_bought_records()
     elif choice == "Zmień ilość":
         view_buy_records_with_buttons()    
     elif choice == "Przeglądaj wszystkie":
