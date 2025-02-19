@@ -42,6 +42,27 @@ def view_all_records():
             sleep(1)
             st.rerun()
 
+# Funkcja do wyświetlania rekordów, które należy kupić, z dodatkowymi informacjami na przycisku
+def view_buy_records_with_buttons2():
+    conn = get_db_connection()
+    # Pobieranie tylko rekordów, gdzie "kupic" = "tak"
+    records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'tak' ORDER BY numer_grupy").fetchall()
+    conn.close()
+
+    st.write("Do Kupienia")
+
+    for record in records:
+        # Ustawienie etykiety przycisku z dodatkowymi informacjami
+        button_label = f"{record['nazwa_towaru']} - {record['ilosc_towaru']} {record['jednostka']}"
+        if st.button(button_label):
+            conn = get_db_connection()
+            conn.execute("UPDATE zakupy SET kupic = 'nie' WHERE id = ?", (record["id"],))
+            conn.commit()
+            conn.close()
+            st.success(f"{record['nazwa_towaru']} został oznaczony jako kupiony")
+            sleep(1)
+            st.rerun()
+
 # Funkcja do wyświetlania rekordów, które należy kupić, z możliwością edycji ilości towaru
 def view_buy_records_with_buttons():
     conn = get_db_connection()
@@ -50,7 +71,7 @@ def view_buy_records_with_buttons():
     conn.close()
 
     # st.title("Rekordy do Kupienia")
-    st.write("Do Kupienia")
+    st.write("Zmień ilość")
 
     if records:
         df = pd.DataFrame(records, columns=records[0].keys())
@@ -179,10 +200,12 @@ def edit_record():
 # Główna funkcja aplikacji
 def main():
     st.sidebar.title("Menu")
-    choice = st.sidebar.selectbox("Wybierz opcję", ["Do Kupienia", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
+    choice = st.sidebar.selectbox("Wybierz opcję", ["Do kupienia", "Zmień ilość", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
 
-    if choice == "Do Kupienia":
-        view_buy_records_with_buttons()
+    if choice == "Do kupienia":
+        view_buy_records_with_buttons2()
+    elif choice == "Zmień ilość":
+        view_buy_records_with_buttons()    
     elif choice == "Przeglądaj wszystkie":
         view_all_records()
     elif choice == "Dodaj":
