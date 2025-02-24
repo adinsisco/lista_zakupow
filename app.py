@@ -60,7 +60,7 @@ def view_not_bought_records():
     records = conn.execute("SELECT * FROM zakupy WHERE kupic = 'nie' ORDER BY nazwa_towaru").fetchall()
     conn.close()
 
-    st.write("Do Zakupu")
+    st.write("Dodaj do kupienia")
 
     for record in records:
         button_label = f"{record['nazwa_towaru']} - {record['ilosc_towaru']} {record['jednostka']}"
