@@ -5,6 +5,9 @@ from time import sleep
 import streamlit.components.v1 as components
 import os
 
+st.set_page_config(page_title="Lista zakupów")
+st.subheader("Lista zakupów")
+
 def is_local():
     host = os.getenv('HOSTNAME', 'localhost')
     return host in ['localhost', '127.0.0.1', '::1']
@@ -182,17 +185,17 @@ def edit_record():
 
 def main():
     st.sidebar.title("Menu")
-    choice = st.sidebar.selectbox("Wybierz opcję", ["Do kupienia", "Do Zakupu", "Zmień ilość", "Przeglądaj wszystkie", "Dodaj", "Usuń", "Edytuj"])
+    choice = st.sidebar.selectbox("Wybierz opcję", ["Do kupienia", "Dodaj do kupienia", "Zmień ilość", "Przeglądaj wszystkie", "Dodaj rekord", "Usuń", "Edytuj"])
 
     if choice == "Do kupienia":
         view_buy_records_with_buttons2()
-    elif choice == "Do Zakupu":
+    elif choice == "Dodaj do kupienia":
         view_not_bought_records()
     elif choice == "Zmień ilość":
         view_buy_records_with_buttons()    
     elif choice == "Przeglądaj wszystkie":
         view_all_records()
-    elif choice == "Dodaj":
+    elif choice == "Dodaj rekord":
         add_record()
     elif choice == "Usuń":
         delete_record()
