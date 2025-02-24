@@ -124,23 +124,23 @@ def add_record():
     else:
         st.write("Aplikacja działa w hostingu.")
 
-    if is_local():
-        numer_grupy = st.number_input("Numer Grupy", min_value=0)
-        nazwa_grupy = st.text_input("Nazwa Grupy")
-        nazwa_towaru = st.text_input("Nazwa Towaru")
-        ilosc_towaru = st.number_input("Ilość Towaru", min_value=0)
-        jednostka = st.selectbox("Jednostka", ["sztuka", "opakowanie", "litr", "kg"])
-        kupic = st.selectbox("Kupić", ["tak", "nie"])
+    # if is_local():
+    numer_grupy = st.number_input("Numer Grupy", min_value=0)
+    nazwa_grupy = st.text_input("Nazwa Grupy")
+    nazwa_towaru = st.text_input("Nazwa Towaru")
+    ilosc_towaru = st.number_input("Ilość Towaru", min_value=0)
+    jednostka = st.selectbox("Jednostka", ["sztuka", "opakowanie", "litr", "kg"])
+    kupic = st.selectbox("Kupić", ["tak", "nie"])
 
-        if st.button("Dodaj"):
-            conn = get_db_connection()
-            conn.execute(
-                "INSERT INTO zakupy (numer_grupy, nazwa_grupy, nazwa_towaru, ilosc_towaru, jednostka, kupic) VALUES (?, ?, ?, ?, ?, ?)",
-                (numer_grupy, nazwa_grupy, nazwa_towaru, ilosc_towaru, jednostka, kupic),
-            )
-            conn.commit()
-            conn.close()
-            st.success("Rekord został dodany")
+    if st.button("Dodaj"):
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO zakupy (numer_grupy, nazwa_grupy, nazwa_towaru, ilosc_towaru, jednostka, kupic) VALUES (?, ?, ?, ?, ?, ?)",
+            (numer_grupy, nazwa_grupy, nazwa_towaru, ilosc_towaru, jednostka, kupic),
+        )
+        conn.commit()
+        conn.close()
+        st.success("Rekord został dodany")
 
 def delete_record():
     st.subheader("Usuń Rekord")
